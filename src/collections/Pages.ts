@@ -1,8 +1,8 @@
 import { Hero } from "@/blocks/Hero";
 import { TwoColumn } from "@/blocks/TwoColumn";
-import { access } from "fs";
+import { CollectionConfig } from "payload";
 
-export const Pages = {
+export const Pages: CollectionConfig = {
     slug: 'pages',
     labels: {
         singular: 'Page',
