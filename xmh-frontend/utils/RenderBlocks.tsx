@@ -1,6 +1,6 @@
 import { blocks } from "../blocks/blockList";
-import { HeroBlock } from "@/blocks/Hero";
-import { TwoColumnBlock } from "@/blocks/TwoColumn";
+import { HeroBlock } from "../blocks/Hero";
+import { TwoColumnBlock } from "../blocks/TwoColumn";
 import React from "react";
 
 // Union type for all possible BlockData types
