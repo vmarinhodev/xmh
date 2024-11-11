@@ -34,5 +34,26 @@ export const Pages: CollectionConfig = {
                 TwoColumn,
             ]
         }
-    ]
-}
+    ],
+    hooks: {
+        afterChange: [
+            async ({ doc }) => {
+                const pathsToRevalidate = [`/${doc.slug}`];
+
+                try {
+                    await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/revalidate?secret=${process.env.REVALIDATION_SECRET}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            paths: pathsToRevalidate,
+                        }),
+                    });
+                } catch (error) {
+                    console.error("Error revalidating:", error)
+                }
+            },
+        ],
+    },
+};
