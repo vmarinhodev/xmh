@@ -38,10 +38,10 @@ export const Pages: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({ doc }) => {
+                console.log("AfterChange Hook Triggered for document:", doc);
                 const pathsToRevalidate = [`/${doc.slug}`];
-
                 try {
-                    await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/revalidate?secret=${process.env.REVALIDATION_SECRET}`, {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/revalidate?secret=${process.env.REVALIDATION_SECRET}`, {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
@@ -50,6 +50,9 @@ export const Pages: CollectionConfig = {
                             paths: pathsToRevalidate,
                         }),
                     });
+
+                    const result = await response.json();
+                    console.log("Revalidation result:", result);
                 } catch (error) {
                     console.error("Error revalidating:", error)
                 }
