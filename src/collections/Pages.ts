@@ -37,24 +37,43 @@ export const Pages: CollectionConfig = {
     ],
     hooks: {
         afterChange: [
-            async ({ doc }) => {
-                console.log("AfterChange Hook Triggered for document:", doc);
-                const pathsToRevalidate = [`/${doc.slug}`];
-                try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/revalidate?secret=${process.env.REVALIDATION_SECRET}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            paths: pathsToRevalidate,
-                        }),
-                    });
+            async ({ doc, previousDoc, req }) => {
+                if (doc !== previousDoc){
+                    console.log("Payload Change detected, sending revalidation request...", doc);
+                }
 
-                    const result = await response.json();
-                    console.log("Revalidation result:", result);
-                } catch (error) {
-                    console.error("Error revalidating:", error)
+                const { payload, transactionID } = req;
+
+                if (transactionID) {
+                    try {
+                        await payload.db.commitTransaction(transactionID);
+                        console.log('"Transaction committed successfully."')
+                    } catch (error) {
+                        console.error("Error commiting transaction: ", error);
+                        return;
+                    }
+                }
+                
+                if (doc.layout !== previousDoc.layout) {
+                    console.log(" doc", doc)
+                    console.log("previousDoc", previousDoc)
+                    try {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/revalidate?secret=${process.env.REVALIDATION_SECRET}&force=true`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                paths: [`/${doc.slug}`],
+                                secret: process.env.REVALIDATION_SECRET,
+                            }),
+                        });
+    
+                        const result = await response.json();
+                        console.log("Revalidation result:", result);
+                    } catch (error) {
+                        console.error("Error revalidating:", error)
+                    }
                 }
             },
         ],

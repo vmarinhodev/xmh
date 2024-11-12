@@ -15,8 +15,8 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // serverURL: 'http://localhost:3000',
-  serverURL: process.env.PAYLOAD_SERVER_URL || 'https://xmh-tawny.vercel.app',
+  serverURL: 'http://localhost:3000',
+  // serverURL: process.env.PAYLOAD_SERVER_URL || 'https://xmh-tawny.vercel.app',
   admin: {
     user: Users.slug,
     importMap: {
